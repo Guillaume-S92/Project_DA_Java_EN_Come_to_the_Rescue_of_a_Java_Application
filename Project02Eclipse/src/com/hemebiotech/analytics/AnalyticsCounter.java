@@ -2,59 +2,40 @@ package com.hemebiotech.analytics;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AnalyticsCounter {
-	private static int headacheCount = 0;
-	private static int rashCount = 0;
-	private static int pupilCount = 0;
 
-	public static void main(String args[]) {
-		BufferedReader reader = null;
-		FileWriter writer = null;
+	public static void main(String[] args) {
+		String inputFile = "symptoms.txt";
+		String outputFile = "result.out";
 
-		try {
-			// Lecture du fichier symptoms.txt
-			reader = new BufferedReader(new FileReader("Project02Eclipse/symptoms.txt"));
-			String line = reader.readLine();
+		// Lecture des symptômes depuis le fichier
+		ISymptomReader symptomReader = new ReadSymptomDataFromFile(inputFile);
+		List<String> symptoms = symptomReader.GetSymptoms();
 
-			while (line != null) {
-				System.out.println("Symptom from file: " + line);
-				if (line.equals("headache")) {
-					headacheCount++;
-					System.out.println("Number of headaches: " + headacheCount);
-				} else if (line.equals("rash")) {
-					rashCount++;
-				} else if (line.contains("pupils")) {
-					pupilCount++;
-				}
+		// Comptage des symptômes
+		Map<String, Integer> symptomCounts = countSymptoms(symptoms);
 
-				line = reader.readLine(); // Lire la ligne suivante
-			}
+		// Écriture des symptômes dans le fichier de sortie
+		ISymptomWriter symptomWriter = new WriteSymptomDataToFile(outputFile);
+		symptomWriter.writeSymptoms(symptomCounts);
+	}
 
-			// Écriture dans le fichier result.out
-			writer = new FileWriter("result.out");
-			writer.write("headache: " + headacheCount + "\n");
-			writer.write("rash: " + rashCount + "\n");
-			writer.write("dilated pupils: " + pupilCount + "\n");
+	private static Map<String, Integer> countSymptoms(List<String> symptoms) {
+		Map<String, Integer> symptomCounts = new HashMap<>();
 
-			System.out.println("File 'result.out' created successfully.");
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			// Fermeture des ressources
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-				if (writer != null) {
-					writer.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+		for (String symptom : symptoms) {
+			if (symptomCounts.containsKey(symptom)) {
+				symptomCounts.put(symptom, symptomCounts.get(symptom) + 1);
+			} else {
+				symptomCounts.put(symptom, 1);
 			}
 		}
+
+		return symptomCounts;
 	}
 }
