@@ -21,7 +21,7 @@ public class AnalyticsCounter {
 		// Compter les symptômes
 		Map<String, Integer> symptomCounts = countSymptoms(symptoms);
 
-		// Trier les symptômes
+		// Trier les symptômes (si nécessaire)
 		Map<String, Integer> sortedSymptoms = sortSymptoms(symptomCounts);
 
 		// Écrire les symptômes dans le fichier de sortie
@@ -49,18 +49,5 @@ public class AnalyticsCounter {
 
 	public void writeSymptoms(Map<String, Integer> symptoms) {
 		symptomWriter.writeSymptoms(symptoms);
-	}
-
-	public static void main(String[] args) {
-		String inputFile = "Project02Eclipse/symptoms.txt";
-		String outputFile = "result.out";
-
-		// Créer une instance de AnalyticsCounter
-		ISymptomReader symptomReader = new ReadSymptomDataFromFile(inputFile);
-		ISymptomWriter symptomWriter = new WriteSymptomDataToFile(outputFile);
-		AnalyticsCounter counter = new AnalyticsCounter(symptomReader, symptomWriter);
-
-		// Appeler la méthode process pour exécuter toutes les actions
-		counter.process();
 	}
 }
