@@ -1,43 +1,60 @@
 package com.hemebiotech.analytics;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 public class AnalyticsCounter {
+	private static int headacheCount = 0;
+	private static int rashCount = 0;
+	private static int pupilCount = 0;
 
-	public static void main(String[] args) {
-		// Path to the file containing symptoms
-		String filepath = "Project02Eclipse/symptoms.txt";
+	public static void main(String args[]) {
+		BufferedReader reader = null;
+		FileWriter writer = null;
 
-		// Read symptoms from file
-		ISymptomReader reader = new ReadSymptomDataFromFile(filepath);
-		List<String> symptoms = reader.GetSymptoms();
+		try {
+			// Lecture du fichier symptoms.txt
+			reader = new BufferedReader(new FileReader("Project02Eclipse/symptoms.txt"));
+			String line = reader.readLine();
 
-		// Count occurrences of each symptom
-		Map<String, Integer> symptomCounts = countSymptoms(symptoms);
+			while (line != null) {
+				System.out.println("Symptom from file: " + line);
+				if (line.equals("headache")) {
+					headacheCount++;
+					System.out.println("Number of headaches: " + headacheCount);
+				} else if (line.equals("rash")) {
+					rashCount++;
+				} else if (line.contains("pupils")) {
+					pupilCount++;
+				}
 
-		// Write results to file
-		writeResults(symptomCounts, "result.out");
-	}
-
-	private static Map<String, Integer> countSymptoms(List<String> symptoms) {
-		Map<String, Integer> symptomCounts = new HashMap<>();
-		for (String symptom : symptoms) {
-			symptomCounts.put(symptom, symptomCounts.getOrDefault(symptom, 0) + 1);
-		}
-		return symptomCounts;
-	}
-
-	private static void writeResults(Map<String, Integer> symptomCounts, String outputPath) {
-		try (FileWriter writer = new FileWriter(outputPath)) {
-			for (Map.Entry<String, Integer> entry : symptomCounts.entrySet()) {
-				writer.write(entry.getKey() + ": " + entry.getValue() + "\n");
+				line = reader.readLine(); // Lire la ligne suivante
 			}
+
+			// Écriture dans le fichier result.out
+			writer = new FileWriter("result.out");
+			writer.write("headache: " + headacheCount + "\n");
+			writer.write("rash: " + rashCount + "\n");
+			writer.write("dilated pupils: " + pupilCount + "\n");
+
+			System.out.println("File 'result.out' created successfully.");
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			// Fermeture des ressources
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
