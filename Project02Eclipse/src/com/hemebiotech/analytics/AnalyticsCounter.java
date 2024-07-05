@@ -1,41 +1,66 @@
 package com.hemebiotech.analytics;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AnalyticsCounter {
 
-	public static void main(String[] args) {
-		String inputFile = "symptoms.txt";
-		String outputFile = "result.out";
+	private final ISymptomReader symptomReader;
+	private final ISymptomWriter symptomWriter;
 
-		// Lecture des symptômes depuis le fichier
-		ISymptomReader symptomReader = new ReadSymptomDataFromFile(inputFile);
-		List<String> symptoms = symptomReader.GetSymptoms();
-
-		// Comptage des symptômes
-		Map<String, Integer> symptomCounts = countSymptoms(symptoms);
-
-		// Écriture des symptômes dans le fichier de sortie
-		ISymptomWriter symptomWriter = new WriteSymptomDataToFile(outputFile);
-		symptomWriter.writeSymptoms(symptomCounts);
+	public AnalyticsCounter(ISymptomReader reader, ISymptomWriter writer) {
+		this.symptomReader = reader;
+		this.symptomWriter = writer;
 	}
 
-	private static Map<String, Integer> countSymptoms(List<String> symptoms) {
+	public void process() {
+		// Récupérer la liste des symptômes
+		List<String> symptoms = getSymptoms();
+
+		// Compter les symptômes
+		Map<String, Integer> symptomCounts = countSymptoms(symptoms);
+
+		// Trier les symptômes
+		Map<String, Integer> sortedSymptoms = sortSymptoms(symptomCounts);
+
+		// Écrire les symptômes dans le fichier de sortie
+		writeSymptoms(sortedSymptoms);
+	}
+
+	public List<String> getSymptoms() {
+		return symptomReader.GetSymptoms();
+	}
+
+	public Map<String, Integer> countSymptoms(List<String> symptoms) {
 		Map<String, Integer> symptomCounts = new HashMap<>();
 
 		for (String symptom : symptoms) {
-			if (symptomCounts.containsKey(symptom)) {
-				symptomCounts.put(symptom, symptomCounts.get(symptom) + 1);
-			} else {
-				symptomCounts.put(symptom, 1);
-			}
+			symptomCounts.put(symptom, symptomCounts.getOrDefault(symptom, 0) + 1);
 		}
 
 		return symptomCounts;
+	}
+
+	public Map<String, Integer> sortSymptoms(Map<String, Integer> symptoms) {
+		// Ici, nous pourrions implémenter un tri par ordre alphabétique si nécessaire
+		return symptoms;
+	}
+
+	public void writeSymptoms(Map<String, Integer> symptoms) {
+		symptomWriter.writeSymptoms(symptoms);
+	}
+
+	public static void main(String[] args) {
+		String inputFile = "Project02Eclipse/symptoms.txt";
+		String outputFile = "result.out";
+
+		// Créer une instance de AnalyticsCounter
+		ISymptomReader symptomReader = new ReadSymptomDataFromFile(inputFile);
+		ISymptomWriter symptomWriter = new WriteSymptomDataToFile(outputFile);
+		AnalyticsCounter counter = new AnalyticsCounter(symptomReader, symptomWriter);
+
+		// Appeler la méthode process pour exécuter toutes les actions
+		counter.process();
 	}
 }
