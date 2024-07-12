@@ -3,6 +3,7 @@ package com.hemebiotech.analytics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The AnalyticsCounter class processes symptom data by reading symptoms, counting their occurrences,
@@ -67,14 +68,14 @@ public class AnalyticsCounter {
 	}
 
 	/**
-	 * Sorts the symptoms map alphabetically.
+	 * Sorts the symptoms map alphabetically by symptom name.
 	 *
 	 * @param symptoms The map of symptoms to sort.
 	 * @return The sorted map of symptoms.
 	 */
 	public Map<String, Integer> sortSymptoms(Map<String, Integer> symptoms) {
-		// Placeholder for sorting logic if needed
-		return symptoms;
+		TreeMap<String, Integer> sortedSymptoms = new TreeMap<>(symptoms);
+		return sortedSymptoms;
 	}
 
 	/**
